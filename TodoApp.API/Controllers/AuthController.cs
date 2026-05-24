@@ -23,8 +23,11 @@ public class AuthController : ControllerBase
         _configuration = configuration;
     }
 
+
     [HttpPost("register")]
-    public async Task<IActionResult> Register(RegisterRequest request)
+    [ProducesResponseType(typeof(AuthResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> Register([FromBody] RegisterRequest request)
     {
         if (await _context.Profiles.AnyAsync(p => p.Login == request.Login))
             return BadRequest(new { message = "Login already exists" });
@@ -51,7 +54,9 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("login")]
-    public async Task<IActionResult> Login(LoginRequest request)
+    [ProducesResponseType(typeof(AuthResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
         var profile = await _context.Profiles
             .FirstOrDefaultAsync(p => p.Login == request.Login);
