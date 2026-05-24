@@ -12,7 +12,6 @@ namespace TodoApp.Desktop
             base.OnStartup(e);
 
             var mainViewModel = new MainViewModel();
-
             var navigationService = new NavigationService(mainViewModel);
 
             mainViewModel.Initialize(navigationService);

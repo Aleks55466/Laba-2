@@ -1,6 +1,8 @@
+using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
 using TodoApp.Data;
 using TodoApp.Models;
 
@@ -10,7 +12,7 @@ public class LoginViewModel : INotifyPropertyChanged
 {
     private readonly ProfileRepository _repo = new();
     private readonly MainViewModel _main;
-    
+
     private string _login = string.Empty;
     private string _password = string.Empty;
     private string _error = string.Empty;
@@ -20,13 +22,13 @@ public class LoginViewModel : INotifyPropertyChanged
         get => _login;
         set { _login = value; OnPropertyChanged(); }
     }
-    
+
     public string Password
     {
         get => _password;
         set { _password = value; OnPropertyChanged(); }
     }
-    
+
     public string Error
     {
         get => _error;
@@ -39,11 +41,11 @@ public class LoginViewModel : INotifyPropertyChanged
     public LoginViewModel(MainViewModel main)
     {
         _main = main;
-        LoginCommand = new RelayCommand(LoginAction);
-        GoToRegisterCommand = new RelayCommand(GoToRegisterAction);
+        LoginCommand = new RelayCommand(ExecuteLogin);
+        GoToRegisterCommand = new RelayCommand(ExecuteGoToRegister);
     }
 
-    private void LoginAction()
+    private void ExecuteLogin()
     {
         if (string.IsNullOrWhiteSpace(Login) || string.IsNullOrWhiteSpace(Password))
         {
@@ -51,7 +53,7 @@ public class LoginViewModel : INotifyPropertyChanged
             return;
         }
 
-        var profile = _repo.GetByLogin(Login);
+        Profile? profile = _repo.GetByLogin(Login);
         if (profile != null && profile.CheckPassword(Password))
         {
             Error = string.Empty;
@@ -63,7 +65,10 @@ public class LoginViewModel : INotifyPropertyChanged
         }
     }
 
-    private void GoToRegisterAction() => _main.CurrentViewModel = new RegisterViewModel(_main);
+    private void ExecuteGoToRegister()
+    {
+        _main.CurrentViewModel = new RegisterViewModel(_main);
+    }
 
     public event PropertyChangedEventHandler? PropertyChanged;
     protected virtual void OnPropertyChanged([CallerMemberName] string? name = null) =>
